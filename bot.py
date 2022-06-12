@@ -25,7 +25,7 @@ medialist = [
 async def on_message(msg):
   if msg.author==client.user:
     return
-  if msg.content.startswith('my name is' or 'My name is'):
+  if msg.content.lower().startswith('my name is'):
     name = msg.content[10::]
     neem = str(msg.author)
     nlist= 'nlist.json'
@@ -90,12 +90,15 @@ async def on_message(msg):
     channel = client.get_channel(random.choice(channellist))
     messages = await channel.history(limit=None).flatten()
     rand = random.choice(messages)
+    rond=random.choice(messages)
     if rand.content == "": 
       return
-    if ("https://tempobot.net/premium" or "jb") in rand.content.lower():
+    if "jb" in rand.content.lower() or rond.content.lower():
+      return
+    if "https://tempobot.net/premium" in rand.content or rond.content:
       return
     else:
-      await msg.channel.send(rand.content)
+      await msg.channel.send(rand.content+" "+rond.content)
 
 @client.event
 async def on_ready():
