@@ -47,7 +47,7 @@ async def on_message(msg):
         json.dump(dics, f)
         await msg.reply("hello i will never forget you," + name,
                         mention_author=True)
-  if msg.content.startswith('jb' or 'Jb' or 'JB' or 'jB'):
+  if msg.content.lower().startswith('jb'):
     if "names" in msg.content.lower():
       nlist= 'nlist.json'
       with open(nlist, 'r') as f:
