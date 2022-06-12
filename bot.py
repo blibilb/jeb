@@ -23,6 +23,8 @@ medialist = [
 
 @client.event
 async def on_message(msg):
+  if msg.author==client.user:
+    return
   if msg.content.startswith('my name is' or 'My name is'):
     name = msg.content[10::]
     neem = str(msg.author)
@@ -55,7 +57,7 @@ async def on_message(msg):
           
           
       
-    #temporary generator  
+    #temporary generator 
     r = requests.post("https://api.deepai.org/api/text-generator", data={'text': msg.content[3::],},headers={'api-key': '32225aa3-a321-4c22-9145-6c43667a58f9'})
     t = (r.json())['output']
     tt = t.replace("\n\n", " ")
@@ -88,7 +90,9 @@ async def on_message(msg):
     channel = client.get_channel(random.choice(channellist))
     messages = await channel.history(limit=None).flatten()
     rand = random.choice(messages)
-    if rand.content == "":
+    if rand.content == "": 
+      return
+    if ("https://tempobot.net/premium" or "jb") in rand.content.lower():
       return
     else:
       await msg.channel.send(rand.content)
