@@ -55,7 +55,7 @@ async def on_message(msg):
           
           
       
-     #temporary generator
+      
     r = requests.post("https://api.deepai.org/api/text-generator", data={'text': msg.content[3::],},headers={'api-key': '32225aa3-a321-4c22-9145-6c43667a58f9'})
     t = (r.json())['output']
     tt = t.replace("\n\n", " ")
@@ -85,18 +85,13 @@ async def on_message(msg):
       rand = random.choice(messages)
       await msg.channel.send(rand.content)
   else:
+    channel = client.get_channel(random.choice(channellist))
+    messages = await channel.history(limit=None).flatten()
     rand = random.choice(messages)
-    await msg.channel.send(rand.content)
-    if msg.author == client.user:
+    if rand.content == "":
       return
     else:
-      channel = client.get_channel(random.choice(channellist))
-      messages = await channel.history(limit=None).flatten()
-      rand = random.choice(messages)
-      if rand.content == "":
-        return
-      else:
-        await msg.channel.send(rand.content)
+      await msg.channel.send(rand.content)
 
 @client.event
 async def on_ready():
