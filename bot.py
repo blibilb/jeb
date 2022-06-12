@@ -55,7 +55,7 @@ async def on_message(msg):
           
           
       
-      
+     #temporary generator
     r = requests.post("https://api.deepai.org/api/text-generator", data={'text': msg.content[3::],},headers={'api-key': '32225aa3-a321-4c22-9145-6c43667a58f9'})
     t = (r.json())['output']
     tt = t.replace("\n\n", " ")
