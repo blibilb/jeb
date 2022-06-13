@@ -11,15 +11,13 @@ from keep_alive import keep_alive
 token = os.environ['TOKEN']
 client = discord.Client()
 channellist = [
-    985005087753658378, 943080827644936232, 833275609136103494,
-    834793071799435274, 845471214613037096, 843047704745345064,
+    985005087753658378, 943080827644936232, 833275609136103494, 845471214613037096, 843047704745345064,
     979931823901655044
 ]
 medialist = [
     943080827644936232, 833275609136103494, 845471214613037096,
     985005087753658378
 ]
-
 
 @client.event
 async def on_message(msg):
@@ -33,8 +31,7 @@ async def on_message(msg):
       with open(nlist, 'r') as f:
         dics = json.load(f)
         if neem in dics.keys() and name == dics[neem]:
-          await msg.reply("sup" + dics[neem],
-                                    mention_author=True)
+          await msg.reply("sup" + dics[neem], mention_author=True)
         if neem in dics.keys() and name != dics[neem]:
           await msg.reply("no you are" + dics[neem],
                                     mention_author=True)
@@ -67,8 +64,21 @@ async def on_message(msg):
     t5 = t4[0]
     if '"' in t5:
       t5 = '"' + t5
+    v=['a','e','i','o','u']
+    c=["b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "x", "y", "z"]
+    if msg.content[3:4] in v:
+      if msg.content[3:5].lower()=="an":
+        await msg.reply(t5, mention_author=True)
+      else:
+        await msg.reply("An"+" "+t5, mention_author=True)
+    if msg.content[3:4] in c: 
+      if msg.content[3:6].lower()=="the":
+        await msg.reply(t5, mention_author=True)
+      else:
+        await msg.reply("The"+" "+t5, mention_author=True)
+    else:
       await msg.reply(t5, mention_author=True)
-      print(t5)
+    print(t5)
   if client.user.mentioned_in(msg):
     channel = client.get_channel(random.choice(medialist))
     messages = [message async for message in channel.history(limit=None)]
@@ -93,12 +103,33 @@ async def on_message(msg):
     rond=random.choice(messages)
     if rand.content == "": 
       return
-    if "jb" in rand.content.lower() or rond.content.lower():
+    if "jb" in rand.content.lower():
       return
-    if "https://tempobot.net/premium" in rand.content or rond.content:
+    if "jb" in rond.content.lower():
       return
+    if "https://tempobot.net/premium" in rand.content:
+      return
+    if "https://tempobot.net/premium" in rond.content:
+      return
+    nlist= 'nlist.json'
+    with open(nlist, 'r') as f:
+      dics = json.load(f)
+      namel=list(dics.keys())
+    h = random.choice([1,2,3,4])
+    if h==1 or h==2 or h==3:
+      await msg.channel.send(rand.content+" "+rond.content.lower())
     else:
-      await msg.channel.send(rand.content+" "+rond.content)
+      if str(msg.author) in namel:
+        thing=rand.content+" "+rond.content.lower()
+        print(thing)
+        b=[]
+        for pos,char in enumerate(thing):
+          if(char == " "):
+            b.append(pos)
+        print(b)
+        thong = random.choice(b) 
+        await msg.channel.send(thing[0:thong]+dics[str(msg.author)]+thing[thong::]) 
+      
 
 @client.event
 async def on_ready():
