@@ -7,24 +7,23 @@ import random
 import requests
 import discord
 from keep_alive import keep_alive
-
 token = os.environ['TOKEN']
+
 client = discord.Client()
-channellist = [
-    985005087753658378, 943080827644936232, 833275609136103494, 845471214613037096, 843047704745345064,
-    979931823901655044
-]
-medialist = [
-    943080827644936232, 833275609136103494, 845471214613037096,
-    985005087753658378
-]
+
+channellist = [738868024706072607, 663162356783906831]
+medialist = [738868024706072607, 663162356783906831]
+
+v=['a','e','i','o','u']
+c=["b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "x", "y", "z"]
+article=['a', 'an', 'the']
 
 @client.event
 async def on_message(msg):
   if msg.author==client.user:
     return
-  if msg.content.lower().startswith('my name is'):
-    name = msg.content[10::]
+  if 'my name is' in msg.content.lower():
+    name = msg.content[msg.content.lower().index('is')+1::]
     neem = str(msg.author)
     nlist= 'nlist.json'
     if os.path.exists(nlist):
@@ -51,6 +50,7 @@ async def on_message(msg):
         dics = json.load(f)
         for k in dics.keys():
           await msg.channel.send(k + ': ' + str(dics[k]))
+        return
           
           
       
@@ -61,27 +61,32 @@ async def on_message(msg):
     t2 = tt.replace("\ ", "")
     ttt = t2.replace("}", "")
     t4 = ttt.partition(".")
-    t5 = t4[0]
+    t5 = t4[random.randint(0,1)]
     if '"' in t5:
       t5 = '"' + t5
+    t5=t5+'.'
     v=['a','e','i','o','u']
     c=["b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "x", "y", "z"]
+    if msg.content.endswith("?"):
+      await msg.reply(t5, mention_author=True)
+      return
     if msg.content[3:4] in v:
       if msg.content[3:5].lower()=="an":
         await msg.reply(t5, mention_author=True)
       else:
         await msg.reply("An"+" "+t5, mention_author=True)
-    if msg.content[3:4] in c: 
+    if msg.content[3:4] in c:
       if msg.content[3:6].lower()=="the":
         await msg.reply(t5, mention_author=True)
       else:
         await msg.reply("The"+" "+t5, mention_author=True)
+    
     else:
       await msg.reply(t5, mention_author=True)
     print(t5)
   if client.user.mentioned_in(msg):
     channel = client.get_channel(random.choice(medialist))
-    messages = [message async for message in channel.history(limit=None)]
+    messages = [message async for message in channel.history(limit=3500)]
     message_attachments = [
             message.attachments for message in messages if message.attachments
         ]
@@ -98,7 +103,7 @@ async def on_message(msg):
       await msg.channel.send(rand.content)
   else:
     channel = client.get_channel(random.choice(channellist))
-    messages = await channel.history(limit=None).flatten()
+    messages = await channel.history(limit=3500).flatten()
     rand = random.choice(messages)
     rond=random.choice(messages)
     if rand.content == "": 
@@ -115,26 +120,22 @@ async def on_message(msg):
     with open(nlist, 'r') as f:
       dics = json.load(f)
       namel=list(dics.keys())
-    h = random.choice([1,2,3,4])
-    if h==1 or h==2 or h==3:
-      await msg.channel.send(rand.content+" "+rond.content.lower())
+    h = random.randint(1,5)
+    if h==1 or h==2 or h==3 or h==4:
+      await msg.channel.send(rand.content)
+      await msg.channel.send(rond.content)
     else:
       if str(msg.author) in namel:
         thing=rand.content+" "+rond.content.lower()
-        print(thing)
         b=[]
         for pos,char in enumerate(thing):
           if(char == " "):
             b.append(pos)
-        print(b)
         thong = random.choice(b) 
         await msg.channel.send(thing[0:thong]+dics[str(msg.author)]+thing[thong::]) 
-      
 
 @client.event
 async def on_ready():
     print('{0.user} ready farts'.format(client))
-
-
 keep_alive()
 client.run(token)
