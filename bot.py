@@ -1,4 +1,5 @@
 import re
+import datetime
 import os
 from discord.ext import commands
 import time
@@ -7,11 +8,13 @@ import random
 import requests
 import discord
 from keep_alive import keep_alive
+intents = discord.Intents.default() 
+intents.members = True
 token = os.environ['TOKEN']
 
-client = discord.Client()
+client = discord.Client(intents=intents)
 
-channellist = [738868024706072607, 663162356783906831]
+channellist = [738868024706072607, 663162356783906831, 453090899144998918, 510642949101584393, 733361891946266664]
 medialist = [738868024706072607, 663162356783906831]
 
 v=['a','e','i','o','u']
@@ -20,36 +23,26 @@ article=['a', 'an', 'the']
 
 @client.event
 async def on_message(msg):
+  start = datetime.date(2020, random.randint(1,12), random.randint(1,28))
+  end = datetime.date(2022, random.randint(1,5), random.randint(1,28))
+
+  timez = end - start
+  dayz = timez.days
+  randays = random.randrange(dayz)
+  randate = start + datetime.timedelta(days=randays)
+  print(randate)
+
   if msg.author==client.user:
     return
-  if 'my name is' in msg.content.lower():
-    name = msg.content[msg.content.lower().index('is')+1::]
-    neem = str(msg.author)
-    nlist= 'nlist.json'
-    if os.path.exists(nlist):
-      with open(nlist, 'r') as f:
-        dics = json.load(f)
-        if neem in dics.keys() and name == dics[neem]:
-          await msg.reply("sup" + dics[neem], mention_author=True)
-        if neem in dics.keys() and name != dics[neem]:
-          await msg.reply("no you are" + dics[neem],
-                                    mention_author=True)
-        if name in dics.values() and neem not in dics.keys():
-          await msg.reply("someone already took that name, " + name+"#2",mention_author=True)
-
-    if neem not in dics.keys() and name not in dics.values():
-      dics[neem] = name
-      with open(nlist, 'w') as f:
-        json.dump(dics, f)
-        await msg.reply("hello i will never forget you," + name,
-                        mention_author=True)
   if msg.content.lower().startswith('jb'):
     if "names" in msg.content.lower():
       nlist= 'nlist.json'
       with open(nlist, 'r') as f:
         dics = json.load(f)
-        for k in dics.keys():
-          await msg.channel.send(k + ': ' + str(dics[k]))
+        lo=""
+        for i in dics:
+          lo+=i+":" +dics[i]+"\n"
+        await msg.channel.send("```"+lo+"```")
         return
           
           
@@ -71,22 +64,64 @@ async def on_message(msg):
       await msg.reply(t5, mention_author=True)
       return
     if msg.content[3:4] in v:
+      
       if msg.content[3:5].lower()=="an":
         await msg.reply(t5, mention_author=True)
       else:
-        await msg.reply("An"+" "+t5, mention_author=True)
+        if t5 =='..':
+          ins = requests.get("https://insult.mattbas.org/api/insult")
+          t5 = ins.text
+          if 'as an' in t5:
+            t5='You are an '+t5[t5.index('as an')+5::]
+          if 'as a' in t5:
+            t5='You are a '+t5[t5.index('as a')+5::]
+          await msg.reply(t5, mention_author=True)
+        else:
+          await msg.reply("An"+" "+t5, mention_author=True)
+          return
+      
     if msg.content[3:4] in c:
       if msg.content[3:6].lower()=="the":
         await msg.reply(t5, mention_author=True)
       else:
-        await msg.reply("The"+" "+t5, mention_author=True)
+        if t5 =='..':
+          ins = requests.get("https://insult.mattbas.org/api/insult")
+          t5 = ins.text
+          if 'as an' in t5:
+            t5='You are an '+t5[t5.index('as an')+6::]
+          if 'as a' in t5:
+            t5   ='You are a '+t5[t5.index('as a')+5::]
+            await msg.reply(t5, mention_author=True)
+          return
+        else:
+          await msg.reply("The"+" "+t5, mention_author=True)
     
-    else:
-      await msg.reply(t5, mention_author=True)
-    print(t5)
+  if 'my name is' in msg.content.lower():
+    
+    name = msg.content[msg.content.lower().index('name is')+7::]
+    neem = str(msg.author)
+    nlist= 'nlist.json'
+    if os.path.exists(nlist):
+      with open(nlist, 'r') as f:
+        dics = json.load(f)
+        if neem in dics.keys() and name == dics[neem]:
+          await msg.reply("sup" + dics[neem], mention_author=True)
+        if neem in dics.keys() and name != dics[neem]:
+          await msg.reply("no you are" + dics[neem],
+                                    mention_author=True)
+        if name in dics.values() and neem not in dics.keys():
+          await msg.reply("someone already took that name, " + name+"#2",mention_author=True)
+
+    if neem not in dics.keys() and name not in dics.values():
+      dics[neem] = name
+      with open(nlist, 'w') as f:
+        json.dump(dics, f)
+        await msg.reply("hello i will never forget you," + name,                    mention_author=True)
+    return
+
   if client.user.mentioned_in(msg):
     channel = client.get_channel(random.choice(medialist))
-    messages = [message async for message in channel.history(limit=3500)]
+    messages = [message async for message in channel.history(limit=5000)]
     message_attachments = [
             message.attachments for message in messages if message.attachments
         ]
@@ -103,7 +138,7 @@ async def on_message(msg):
       await msg.channel.send(rand.content)
   else:
     channel = client.get_channel(random.choice(channellist))
-    messages = await channel.history(limit=3500).flatten()
+    messages = await channel.history(limit=5000).flatten()
     rand = random.choice(messages)
     rond=random.choice(messages)
     if rand.content == "": 
@@ -133,7 +168,29 @@ async def on_message(msg):
             b.append(pos)
         thong = random.choice(b) 
         await msg.channel.send(thing[0:thong]+dics[str(msg.author)]+thing[thong::]) 
-
+am=open('amount.txt','r')
+an=open('animal.txt','r')
+anp=open('animal part.txt','r')
+am1=am.read().split()
+an1=an.read().split()
+anp1=anp.read().split()
+print(random.choice(am1)+' of '+ random.choice(an1)+' '+random.choice(anp1))
+am.close()
+an.close()
+anp.close()
+@client.event
+async def on_member_join(member: discord.Member):
+  am=open('amount.txt','r')
+  an=open('animal.txt','r')
+  anp=open('animal part.txt','r')
+  am1=am.read().split()
+  an1=an.read().split()
+  anp1=anp.read().split()
+  print(random.choice(am1)+' of '+ random.choice(an1)+' '+random.choice(anp1))
+  await member.edit(nick=random.choice(am1)+' of '+ random.choice(an1)+' '+random.choice(anp1))
+  am.close()
+  an.close()
+  anp.close()
 @client.event
 async def on_ready():
     print('{0.user} ready farts'.format(client))
